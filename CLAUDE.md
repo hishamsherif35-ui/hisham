@@ -6,7 +6,7 @@ This is a static one-page site with no build step. Vercel deploys every push to 
 - `index.html` holds the whole site (CSS and JS inline). Content is edited in the arrays at the top of the `<script>`:
   - `CATEGORIES`: each category has a `videos` list of `{ title, ratio: "16:9" | "9:16", src, poster }`. The first video in a list opens first.
   - `CLIENTS`: `[slug, name, width, height]`, shown in the right-hand logo strip in this order (big brands first).
-  - `CONTACT`: icon buttons only. Never print the email or phone number as visible text (Hisham asked for that).
+  - `CONTACT`: icon buttons only. The email and phone number must not appear as text on the page. The one exception: clicking Email opens a small pop-up with the address and a Copy button (an entry with `copy:` instead of `href:`). Email is not a mailto link.
 - `videos/` holds `<slug>.mp4` and `<slug>.jpg` (poster).
 - `logos/` holds dark single-color PNGs (#111214 on transparent).
 - `hisham-bg.jpg` is the B&W studio portrait used as the background.

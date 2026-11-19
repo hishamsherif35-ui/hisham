@@ -127,6 +127,18 @@ body.playing .intro{opacity:0;transform:translateX(-24px);pointer-events:none}
 .chip{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:999px;font-size:14px;font-weight:500;text-decoration:none;transition:background .3s,transform .3s}
 .chip:hover{background:var(--glass-hi);transform:translateY(-2px)}
 .chip svg{width:16px;height:16px;flex:none}
+button.chip{cursor:pointer;color:var(--ink)}
+.chip[aria-expanded="true"]{background:var(--glass-hi)}
+.contact{position:relative}
+.pop{position:absolute;bottom:calc(100% + 12px);left:0;z-index:5;display:flex;align-items:center;gap:10px;
+  padding:8px 8px 8px 16px;border-radius:16px;background:rgba(244,245,246,.9);white-space:nowrap;
+  animation:popIn .35s cubic-bezier(.2,.9,.3,1.2) both}
+.pop::after{display:none}
+.pop-val{font-family:var(--f-mono);font-size:13px;letter-spacing:.01em;color:var(--ink);user-select:all;-webkit-user-select:all}
+.pop-btn{padding:8px 14px;border-radius:11px;background:var(--ink);color:#fff;font-size:13px;font-weight:600;cursor:pointer;transition:background .25s,transform .2s}
+.pop-btn:hover{transform:translateY(-1px)}
+.pop-btn.ok{background:var(--rec)}
+@keyframes popIn{from{opacity:0;transform:translateY(8px) scale(.96)}to{opacity:1;transform:none}}
 
 /* ---------- category rail ---------- */
 .rail{grid-column:3;display:flex;flex-direction:column;justify-content:center;min-width:0;animation:slideIn 1s .3s cubic-bezier(.2,.7,.2,1) both}
@@ -351,7 +363,7 @@ const CLIENTS = [
   ["ladyy","Ladyy.com",480,123],["elmehelmy","ElMehelmy",271,160],["atai","ATAI",91,96],
 ];
 const CONTACT = [
-  { label:"Email",     href:"mailto:hishamsherif35@gmail.com", icon:"mail" },
+  { label:"Email",     copy:"hishamsherif35@gmail.com", icon:"mail" },   /* shows a pop-up with a Copy button, not a link */
   { label:"WhatsApp",  href:"https://wa.me/201004489943", icon:"chat" },
   { label:"Instagram", href:"https://www.instagram.com/hishamsherif1/", icon:"cam" },
 ];
@@ -370,8 +382,30 @@ const icons = {
 $("#years").textContent = (new Date().getFullYear() - FREELANCE_SINCE) + "+";
 
 /* contact */
-$("#contact").innerHTML = CONTACT.map(c =>
-  `<a class="chip glass" href="${c.href}" target="_blank" rel="noopener">${icons[c.icon]||""}${c.label}</a>`).join("");
+$("#contact").innerHTML = CONTACT.map((c, i) => c.copy
+  ? `<button type="button" class="chip glass" id="copyChip" aria-expanded="false" aria-controls="copyPop">${icons[c.icon]||""}${c.label}</button>`
+  : `<a class="chip glass" href="${c.href}" target="_blank" rel="noopener">${icons[c.icon]||""}${c.label}</a>`).join("")
+  + (CONTACT.some(c => c.copy) ? `<div class="pop glass" id="copyPop" role="dialog" aria-label="Email address" hidden>
+      <span class="pop-val" id="copyVal"></span>
+      <button type="button" class="pop-btn" id="copyBtn">Copy</button></div>` : "");
+(function(){
+  const item = CONTACT.find(c => c.copy); if (!item) return;
+  const chip = $("#copyChip"), pop = $("#copyPop"), val = $("#copyVal"), btn = $("#copyBtn");
+  val.textContent = item.copy;
+  const show = on => { pop.hidden = !on; chip.setAttribute("aria-expanded", on);
+    if (on) { pop.style.left = chip.offsetLeft + "px"; btn.textContent = "Copy"; btn.classList.remove("ok"); } };
+  chip.addEventListener("click", e => { e.stopPropagation(); show(pop.hidden); });
+  pop.addEventListener("click", e => e.stopPropagation());
+  document.addEventListener("click", () => show(false));
+  document.addEventListener("keydown", e => { if (e.key === "Escape") show(false); });
+  btn.addEventListener("click", () => {
+    const done = () => { btn.textContent = "Copied ✓"; btn.classList.add("ok"); };
+    const fallback = () => { const r = document.createRange(); r.selectNodeContents(val);
+      const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r);
+      try { document.execCommand("copy") ? done() : (btn.textContent = "Press Ctrl+C"); } catch { btn.textContent = "Press Ctrl+C"; } };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(item.copy).then(done, fallback); else fallback();
+  });
+})();
 
 /* clients ticker (list doubled for a seamless loop) */
 /* size each logo by visual area so wide and square marks look equally heavy */
