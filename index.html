@@ -87,6 +87,7 @@ body.playing .intro{opacity:0;transform:translateX(-24px);pointer-events:none}
 .ph::after{content:"";position:absolute;left:-7px;top:-4px;width:14px;height:13px;background:var(--rec);clip-path:polygon(0 0,100% 0,100% 55%,50% 100%,0 55%)}
 .ph b{position:absolute;left:0;top:-28px;transform:translateX(-50%);font-family:var(--f-mono);font-weight:500;font-size:11px;letter-spacing:.04em;color:#fff;background:var(--rec);padding:2px 6px;border-radius:4px;white-space:nowrap;font-variant-numeric:tabular-nums}
 .ph.out{opacity:0}
+html,body{overflow-x:clip}
 .title{
   margin:.55em 0 0;font-family:var(--f-display);font-weight:500;font-variation-settings:"wdth" 110;
   font-size:clamp(13px,1.05vw,17px);text-transform:uppercase;white-space:nowrap;color:var(--ink-soft);
@@ -246,8 +247,9 @@ body.playing .stage{opacity:1;transform:none;pointer-events:auto;visibility:visi
   .ticker ul{flex-direction:row;height:100%;width:max-content;animation-name:tickX}
   .ticker li{padding:0 16px}
   @keyframes tickX{to{transform:translateX(-50%)}}
-  .stage{position:fixed;z-index:20;left:max(10px,env(safe-area-inset-left,0px));right:max(10px,env(safe-area-inset-right,0px));top:50%;width:auto;max-height:92%;overflow:auto;transform:translateY(-46%) scale(.96)}
+  .stage{position:fixed;z-index:20;justify-self:stretch;align-self:auto;left:max(10px,env(safe-area-inset-left,0px));right:auto;top:50%;width:calc(100vw - 2 * max(10px,env(safe-area-inset-left,0px)));min-width:0;overflow-x:hidden;max-height:92%;overflow:auto;transform:translateY(-46%) scale(.96)}
   body.playing .stage{transform:translateY(-50%)}
+  .stage.vert{width:calc(100vw - 2 * max(10px,env(safe-area-inset-left,0px)));min-width:0}
   .screen.v{width:calc(min(60vh,540px) * 9 / 16)}
   .scrim{position:fixed;inset:0;z-index:19;background:rgba(10,10,12,.45);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);opacity:0;pointer-events:none;transition:opacity .4s}
   body.playing .scrim{opacity:1;pointer-events:auto}
@@ -264,9 +266,9 @@ body.playing .stage{opacity:1;transform:none;pointer-events:auto;visibility:visi
 
 <div class="bg" aria-hidden="true"><img src="hisham-bg.jpg" alt=""></div>
 <div class="grain" aria-hidden="true"></div>
-<div class="scrim" id="scrim"></div>
 
 <main class="app">
+  <div class="scrim" id="scrim"></div>
   <section class="intro" aria-label="About">
     <div class="ident" id="ident">
       <h1 class="name" id="name">Hisham Sherif Hassan</h1>
